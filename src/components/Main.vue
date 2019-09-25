@@ -1,21 +1,22 @@
 <template>
   <div class="main">
     <el-container>
-      <el-header>
+      <el-header class="header">
         <el-menu
-        :default-active="1"
+         default-active="1"
           class="menu"
           mode="horizontal"
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
+          @select="handleSelect"
         >
-          <el-menu-item index="1" id="band">
+          <el-menu-item index="1" id="band" style="margin-left:20px">
             <template slot="title">
               <div icon="el-icon-truck">Floating Bus</div>
             </template>
           </el-menu-item>
-          <el-menu-item index="2">音乐</el-menu-item>
+          <el-menu-item index="2" style="margin-left:30px">音乐</el-menu-item>
           <el-menu-item index="3">照片</el-menu-item>
           <el-menu-item index="4">视频</el-menu-item>
           <el-menu-item index="5">漫画</el-menu-item>
@@ -35,12 +36,19 @@ export default {
   data() {
     return {};
   },
-  methods: {}
+  methods: {
+    handleSelect(key,path){
+      console.log(key,path)
+    }
+  }
 };
 </script>
 <style>
+.main .el-header{
+  padding: 0;
+}
 #band {
-  font-family: fantasy;
+  font-family:fantasy;
   font-size: 20px;
   text-align: center;
 }
