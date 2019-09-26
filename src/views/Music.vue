@@ -1,6 +1,6 @@
 <template>
   <div id="music">
-    <h1>建设中。。。<</h1>
+    <h1>建设中。。。</h1>
   </div>
 </template>
 <script>

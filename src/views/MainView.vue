@@ -3,7 +3,7 @@
     <el-container>
       <el-header class="header">
         <el-menu class="menu" mode="horizontal" router>
-          <el-menu-item index="/" class="band" style="margin-left:20px">
+          <el-menu-item index="/" class="band" style="margin-left:20px;font-size:25px">
             <template slot="title">
               <div icon="el-icon-truck">Floating Bus</div>
             </template>
@@ -47,7 +47,7 @@ export default {
   background-size: 100%;
   background-attachment: fixed;
   background-position-y: 35px;
-
+  background-repeat: no-repeat;
 }
 .main-view .band {
   font-family: fantasy;
