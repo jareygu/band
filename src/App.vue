@@ -1,16 +1,14 @@
 <template>
   <div id="app">
-    <Main class="main"></Main>
+    <MainView></MainView>
   </div>
 </template>
-
 <script>
-import Main from './components/Main.vue'
-
+import MainView from './views/MainView.vue'
 export default {
   name: 'app',
   components: {
-    Main
+    MainView
   }
 }
 </script>
