@@ -16,7 +16,9 @@
         </el-menu>
       </el-header>
       <el-main class="body">
-        <router-view></router-view>
+        <keep-alive>
+          <router-view></router-view>
+        </keep-alive>
       </el-main>
     </el-container>
   </div>
@@ -28,9 +30,7 @@ export default {
   data() {
     return {};
   },
-  methods: {
-    
-  }
+  methods: {}
 };
 </script>
 <style>
