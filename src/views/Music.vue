@@ -18,7 +18,7 @@
               <el-row type="flex">
                 <el-col :span="20">{{song.name}} - {{song.artist}}</el-col>
                 <el-col :span="2">
-                  <i :class="playState" @click="playInList"></i>
+                  <i id="list-icon" :class="song.state" @click="playInList(song)"></i>
                 </el-col>
                 <el-col :span="2">
                   <i class="el-icon-delete" @click="delSong(song.id)"></i>
@@ -53,32 +53,14 @@ export default {
       songUrl: "",
       songs: [
         {
-          id: "1",
-          name: "yellow",
-          artist: "Coldplay"
-        },
-        {
-          id: "2",
-          name: "yellow",
-          artist: "Coldplay"
-        },
-        {
-          id: "3",
-          name: "yellow",
-          artist: "Coldplay"
-        },
-        {
-          id: "4",
-          name: "yellow",
-          artist: "Coldplay"
-        },
-        {
-          id: "5",
-          name: "yellow",
-          artist: "Coldplay"
+          id: "17177324",
+          name: "Yellow",
+          artist: "Coldplay",
+          state: "el-icon-video-play"
         }
       ],
-      playState: "el-icon-video-play"
+      playState: { play: "el-icon-video-play", pause: "el-icon-video-pause" },
+      playName: ""
     };
   },
   methods: {
@@ -93,9 +75,46 @@ export default {
       let res = await fetch(`http://localhost:3000/song/url?id=${row.id}`);
       let result = await res.json();
       this.songUrl = result.data[0].url;
+      const audio = document.getElementById("audio");
+      audio.src = this.songUrl;
+      audio.play();
+
+      row.state = this.playState.pause
+      this.add(row);
+      
+      let player = document.getElementById("music-info");
+      player.innerHTML = row.name + " - " + row.artists[0].name;
     },
-    playInList() {
-      console.log(22);
+    async playInList(song) {
+      const audio = document.getElementById("audio");
+      const i = document.getElementById("player-icon");
+      const list = document.getElementById("list-icon");
+      const player = document.getElementById("music-info");
+
+      // 播放状态时，点击暂停
+      if (list.className == this.playState.pause) {
+        if (audio.play) {
+          audio.pause();
+          i.className = this.playState.play;
+          list.className = this.playState.play;
+        }
+        return;
+      }
+
+      // 如果是同一首歌 就继续播放
+      if (player.innerHTML.includes(song.name + " - " + song.artist)) {
+        audio.play();
+        return;
+      }
+
+      // 播放音乐
+      let res = await fetch(`http://localhost:3000/song/url?id=${song.id}`);
+      let result = await res.json();
+      this.songUrl = result.data[0].url;
+      audio.src = this.songUrl;
+      audio.play();
+      // 更新audio栏音乐名字
+      player.innerHTML = song.name + " - " + song.artist;
     },
     delSong(id) {
       this.songs.forEach((song, index) => {
@@ -111,14 +130,24 @@ export default {
       newSong.id = row.id;
       newSong.name = row.name;
       newSong.artist = row.artists[0].name;
+      newSong.state = this.playState.play;
       let mark = true;
+
       this.songs.forEach(song => {
-        if (song.id == newSong.id) return;
-        console.log(newSong.id)
-        
+        if (song.id == row.id) mark = false;
       });
-      // this.songs.push(newSong);
+      if (mark == false) return;
+      this.songs.unshift(newSong);
     }
+  },
+  mounted() {
+    const audio = document.getElementById("audio");
+    audio.addEventListener("play", () => {
+      document.getElementById("player-icon").className = this.playState.pause;
+    });
+    audio.addEventListener("pause", () => {
+      document.getElementById("player-icon").className = this.playState.play;
+    });
   }
 };
 </script>

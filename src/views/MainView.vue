@@ -3,16 +3,32 @@
     <el-container>
       <el-header class="header">
         <el-menu class="menu" mode="horizontal" router>
-          <el-menu-item index="/" class="band" style="margin-left:20px;font-size:25px">
-            <template slot="title">
-              <div icon="el-icon-truck">Floating Bus</div>
-            </template>
-          </el-menu-item>
+          <el-menu-item
+            index="/"
+            class="band"
+            style="margin-left:20px;font-size:25px;color:#ffffff"
+          >Floating Bus</el-menu-item>
           <el-menu-item index="/music" style="margin-left:30px">音乐</el-menu-item>
           <el-menu-item index="/photo">照片</el-menu-item>
           <el-menu-item index="/video">视频</el-menu-item>
           <el-menu-item index="/comic">漫画</el-menu-item>
           <el-menu-item index="/product">周边产品</el-menu-item>
+          <el-menu-item style="position:absolute;right:0;margin-right:50px;color:Yellow">
+            <template>
+              <audio
+                id="audio"
+                loop
+                :src="src"
+                @play="show=false"
+                @pause="show=true"
+              >您的浏览器不支持audio标签。</audio>
+              <div id="player">
+                <i id="player-icon" :class="playState.play" @click="play"></i>
+                <a id="music-info">Yellow - Coldplay</a>
+                <i class="el-icon-refresh-right" @click="replay" style="margin-left:20px"></i>
+              </div>
+            </template>
+          </el-menu-item>
         </el-menu>
       </el-header>
       <el-main class="body">
@@ -28,9 +44,31 @@
 export default {
   name: "main-view",
   data() {
-    return {};
+    return {
+      src:
+        "http://antiserver.kuwo.cn/anti.s?format=mp3|aac&rid=240945&type=convert_url&response=res",
+      playState: { play: "el-icon-video-play", pause: "el-icon-video-pause" }
+    };
   },
-  methods: {}
+  methods: {
+    play() {
+      const audio = document.getElementById("audio");
+      const i = document.getElementById("player-icon");
+      const list = document.getElementById("list-icon");
+      if (audio.paused) {
+        audio.play();
+        i.className = this.playState.pause;
+        list.className = this.playState.pause;
+      } else {
+        audio.pause();
+        i.className = this.playState.play;
+        list.className = this.playState.play;
+      }
+    },
+    replay() {
+      document.getElementById("audio").load();
+    }
+  }
 };
 </script>
 <style>
@@ -68,12 +106,12 @@ export default {
 }
 .main-view .el-menu--horizontal > .el-menu-item:not(.is-disabled):focus,
 .main-view .el-menu--horizontal > .el-menu-item:not(.is-disabled):hover {
-  color: #ffffff;
+  color: #a8a8a8;
   background: #000000;
 }
 
 .main-view .el-menu--horizontal .el-menu-item.is-active {
-  color: #ffffff;
+  color: #a8a8a8;
   background: #000000;
   border-bottom: 0;
 }
