@@ -16,8 +16,8 @@
           <el-menu-item style="position:absolute;right:0;margin-right:50px;color:Yellow">
             <template>
               <audio
-                id="audio"
-                loop
+                name="17177324"
+                class="audio"
                 :src="src"
                 @play="show=false"
                 @pause="show=true"
@@ -26,6 +26,7 @@
                 <i id="player-icon" :class="playState.play" @click="play"></i>
                 <a id="music-info">Yellow - Coldplay</a>
                 <i class="el-icon-refresh-right" @click="replay" style="margin-left:20px"></i>
+                <i class="el-icon-d-arrow-right" id="next-song"></i>
               </div>
             </template>
           </el-menu-item>
@@ -52,21 +53,15 @@ export default {
   },
   methods: {
     play() {
-      const audio = document.getElementById("audio");
-      const i = document.getElementById("player-icon");
-      const list = document.getElementById("list-icon");
+      const audio = document.getElementsByClassName("audio")[0];
       if (audio.paused) {
         audio.play();
-        i.className = this.playState.pause;
-        list.className = this.playState.pause;
       } else {
         audio.pause();
-        i.className = this.playState.play;
-        list.className = this.playState.play;
       }
     },
     replay() {
-      document.getElementById("audio").load();
+      document.getElementsByClassName("audio")[0].load();
     }
   }
 };

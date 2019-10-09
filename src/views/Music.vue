@@ -18,7 +18,7 @@
               <el-row type="flex">
                 <el-col :span="20">{{song.name}} - {{song.artist}}</el-col>
                 <el-col :span="2">
-                  <i id="list-icon" :class="song.state" @click="playInList(song)"></i>
+                  <i :id="song.id" name="play-list" :class="song.state" @click="playInList(song)"></i>
                 </el-col>
                 <el-col :span="2">
                   <i class="el-icon-delete" @click="delSong(song.id)"></i>
@@ -60,11 +60,13 @@ export default {
         }
       ],
       playState: { play: "el-icon-video-play", pause: "el-icon-video-pause" },
-      playName: ""
+      playName: "",
+      playId: "17177324"
     };
   },
   methods: {
     async searchMusic() {
+      if (!this.searchKey) return;
       let res = await fetch(
         `http://localhost:3000/search?keywords=${this.searchKey}`
       );
@@ -72,38 +74,44 @@ export default {
       this.searchResult = result.result.songs;
     },
     async play(row) {
+      if (!row.id) return;
+      // 请求资源
       let res = await fetch(`http://localhost:3000/song/url?id=${row.id}`);
       let result = await res.json();
       this.songUrl = result.data[0].url;
-      const audio = document.getElementById("audio");
+      // audio播放歌曲
+      const audio = document.getElementsByClassName("audio")[0];
       audio.src = this.songUrl;
+      audio.name = this.playId;
       audio.play();
-
-      row.state = this.playState.pause
-      this.add(row);
-      
+      // 更新播放器字段名
       let player = document.getElementById("music-info");
       player.innerHTML = row.name + " - " + row.artists[0].name;
+      // 更新播放列表图标状态
+      this.songs.forEach(song => {
+        song.state = this.playState.play;
+      });
+      // 更新全局变量
+      this.playId = row.id;
+      // 更新图标状态
+      row.state = this.playState.pause;
+      // 添加到播放列表
+      this.add(row);
     },
     async playInList(song) {
-      const audio = document.getElementById("audio");
-      const i = document.getElementById("player-icon");
-      const list = document.getElementById("list-icon");
-      const player = document.getElementById("music-info");
+      const audio = document.getElementsByClassName("audio")[0];
+      this.playId = song.id;
+      const playInfo = document.getElementById("music-info");
 
-      // 播放状态时，点击暂停
-      if (list.className == this.playState.pause) {
-        if (audio.play) {
-          audio.pause();
-          i.className = this.playState.play;
-          list.className = this.playState.play;
-        }
+      // 如果是同一首歌 暂停状态 就继续播放
+      if (audio.name == song.id && audio.paused) {
+        audio.play();
         return;
       }
 
-      // 如果是同一首歌 就继续播放
-      if (player.innerHTML.includes(song.name + " - " + song.artist)) {
-        audio.play();
+      // 播放状态时，点击暂停
+      if (audio.name == song.id && !audio.paused) {
+        audio.pause();
         return;
       }
 
@@ -112,9 +120,11 @@ export default {
       let result = await res.json();
       this.songUrl = result.data[0].url;
       audio.src = this.songUrl;
+      audio.name = song.id;
+      this.playId = song.id;
       audio.play();
       // 更新audio栏音乐名字
-      player.innerHTML = song.name + " - " + song.artist;
+      playInfo.innerHTML = song.name + " - " + song.artist;
     },
     delSong(id) {
       this.songs.forEach((song, index) => {
@@ -126,27 +136,58 @@ export default {
     },
     add(row) {
       if (!row.id) return;
-      let newSong = {};
-      newSong.id = row.id;
-      newSong.name = row.name;
-      newSong.artist = row.artists[0].name;
-      newSong.state = this.playState.play;
-      let mark = true;
-
       this.songs.forEach(song => {
         if (song.id == row.id) mark = false;
       });
       if (mark == false) return;
+      let newSong = {};
+      newSong.id = row.id;
+      newSong.name = row.name;
+      newSong.artist = row.artists[0].name;
+      if (row.state) {
+        newSong.state = row.state;
+      } else {
+        newSong.state = this.playState.play;
+      }
+
+      let mark = true;
+
       this.songs.unshift(newSong);
     }
   },
   mounted() {
-    const audio = document.getElementById("audio");
+    const audio = document.getElementsByClassName("audio")[0];
+    const i = document.getElementById("player-icon");
+
     audio.addEventListener("play", () => {
-      document.getElementById("player-icon").className = this.playState.pause;
+      this.songs.forEach(song => {
+        if (song.id == this.playId) {
+          song.state = this.playState.pause;
+        } else {
+          song.state = this.playState.play;
+        }
+      });
+      i.className = this.playState.pause;
     });
     audio.addEventListener("pause", () => {
-      document.getElementById("player-icon").className = this.playState.play;
+      this.songs.forEach(song => {
+        if (song.id == this.playId) {
+          song.state = this.playState.play;
+        }
+      });
+      i.className = this.playState.play;
+    });
+    // 结束后自动，随机播放
+    audio.addEventListener("ended", () => {
+      let newSongList = this.songs.filter(song => song.id != this.playId);
+      let index = Math.floor(Math.random() * newSongList.length);
+      this.playInList(newSongList[index]);
+    });
+    // 点击随机播放
+    document.getElementById("next-song").addEventListener("click", () => {
+      let newSongList = this.songs.filter(song => song.id != this.playId);
+      let index = Math.floor(Math.random() * newSongList.length);
+      this.playInList(newSongList[index]);
     });
   }
 };
