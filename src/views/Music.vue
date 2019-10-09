@@ -3,7 +3,7 @@
     <div class="box">
       <div class="search">
         <el-row type="flex" :gutter="10" justify="center">
-          <el-col :span="6">
+          <el-col :span="6" style="opacity: 0.8">
             <el-input v-model="searchKey"></el-input>
           </el-col>
           <el-col :span="1">
@@ -12,22 +12,27 @@
         </el-row>
       </div>
       <div class="container">
-        <div class="songs">
-          <ul>
-            <li v-for="song in songs" :key="song.id">
-              <el-row type="flex">
-                <el-col :span="20">{{song.name}} - {{song.artist}}</el-col>
-                <el-col :span="2">
-                  <i :id="song.id" name="play-list" :class="song.state" @click="playInList(song)"></i>
-                </el-col>
-                <el-col :span="2">
-                  <i class="el-icon-delete" @click="delSong(song.id)"></i>
-                </el-col>
-              </el-row>
-            </li>
-          </ul>
-        </div>
-        <div class="list">
+        <el-card shadow="always" style="opacity: 0.7">
+          <div class="songs">
+            <ul>
+              <li v-for="song in songs" :key="song.id">
+                <el-row type="flex">
+                  <el-col :span="20">
+                    <span>{{song.name}} - {{song.artist}}</span>
+                  </el-col>
+                  <el-col :span="2">
+                    <i :id="song.id" name="play-list" :class="song.state" @click="playInList(song)"></i>
+                  </el-col>
+                  <el-col :span="2">
+                    <i class="el-icon-delete" @click="delSong(song.id)"></i>
+                  </el-col>
+                </el-row>
+              </li>
+            </ul>
+          </div>
+        </el-card>
+
+        <div class="list"  style="opacity: 0.9">
           <el-table :data="searchResult" max-height="600" height="600">
             <el-table-column prop="name" label="歌名" width="350"></el-table-column>
             <el-table-column prop="artists[0].name" label="歌手" width="200"></el-table-column>
@@ -197,7 +202,7 @@ export default {
   text-align: center;
 }
 .list {
-  padding: 10px;
+  padding: 5px;
   height: 600px;
   width: 700px;
   background-color: aqua;
